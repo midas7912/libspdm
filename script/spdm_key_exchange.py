@@ -753,10 +753,11 @@ class SpdmKeyExchangeSession:
         Returns:
             SpdmKeyExchangeRequest ready to send
         """
-        # Generate session ID
-        self.req_session_id = struct.unpack('<H', os.urandom(2))[0]
-        if self.req_session_id == 0 or self.req_session_id == 0xFFFF:
-            self.req_session_id = 0x1234  # Avoid reserved values
+        # Generate session ID (avoid reserved values 0x0000 and 0xFFFF)
+        while True:
+            self.req_session_id = struct.unpack('<H', os.urandom(2))[0]
+            if self.req_session_id != 0 and self.req_session_id != 0xFFFF:
+                break
 
         # Generate DHE key pair
         self.my_public_key = self.dhe.generate_key_pair()
@@ -853,10 +854,11 @@ class SpdmKeyExchangeSession:
         self.peer_public_key = request.exchange_data
         self.peer_random_data = request.random_data
 
-        # Generate session ID
-        self.rsp_session_id = struct.unpack('<H', os.urandom(2))[0]
-        if self.rsp_session_id == 0 or self.rsp_session_id == 0xFFFF:
-            self.rsp_session_id = 0x5678  # Avoid reserved values
+        # Generate session ID (avoid reserved values 0x0000 and 0xFFFF)
+        while True:
+            self.rsp_session_id = struct.unpack('<H', os.urandom(2))[0]
+            if self.rsp_session_id != 0 and self.rsp_session_id != 0xFFFF:
+                break
 
         # Generate DHE key pair
         self.my_public_key = self.dhe.generate_key_pair()
